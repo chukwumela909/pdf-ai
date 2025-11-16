@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import {
   Highlight,
   Summary,
@@ -35,11 +36,7 @@ const workflow = [
   },
 ];
 
-const featureStats = [
-  { label: "Compression", value: "85%", sub: "Avg. reading time saved" },
-  { label: "Context depth", value: "11 layers", sub: "Multi-pass reasoning" },
-  { label: "Teams", value: "120+", sub: "Already summarizing faster" },
-];
+const loveNote = "Milimo.ai is just me shipping commits that say I adore you—let's keep building.";
 
 const statusCopy: Record<Status, string> = {
   idle: "Awaiting upload",
@@ -101,6 +98,8 @@ export default function Home() {
   const [dynamicHighlights, setDynamicHighlights] = useState<Highlight[]>(defaultHighlights);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [levitating, setLevitating] = useState(false);
+  const levitateTimerRef = useRef<number | null>(null);
 
   const summarizeFile = useCallback(async (candidate: File) => {
     try {
@@ -175,6 +174,24 @@ export default function Home() {
     inputRef.current?.click();
   }, []);
 
+  const triggerLevitation = useCallback(() => {
+    setLevitating(true);
+    if (levitateTimerRef.current) {
+      window.clearTimeout(levitateTimerRef.current);
+    }
+    levitateTimerRef.current = window.setTimeout(() => {
+      setLevitating(false);
+    }, 900);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (levitateTimerRef.current) {
+        window.clearTimeout(levitateTimerRef.current);
+      }
+    };
+  }, []);
+
   const activeSummary = status === "ready" && file ? dynamicSummary : defaultSummary;
   const activeHighlights = status === "ready" && file ? dynamicHighlights : defaultHighlights;
   const statusLabel = statusCopy[status];
@@ -194,17 +211,22 @@ export default function Home() {
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-sm text-white/70">
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              Reimagine PDF understanding
+              Milimo.ai
             </div>
             <div className="space-y-6">
-              <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
-                Summaries that read like your smartest teammate skimmed the PDF for you.
-              </h1>
-              <p className="max-w-2xl text-lg text-zinc-300">
-                PDF Prism ingests annual reports, research papers, and policy decks, then crafts beautiful, trusted summaries with citations, action plans, and quotable nuggets.
-              </p>
+                <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
+                Welcome to <span className="text-fuchsia-300">Milimo.ai</span>
+                </h1>
+              <div className="max-w-2xl text-lg text-zinc-200">
+                <TextGenerateEffect
+                  words={loveNote}
+                  className="font-normal text-left text-zinc-100"
+                  filter={false}
+                  duration={0.4}
+                />
+              </div>
             </div>
-            <div className="flex flex-wrap gap-4 text-sm text-zinc-300">
+            {/* <div className="flex flex-wrap gap-4 text-sm text-zinc-300">
               {featureStats.map((stat) => (
                 <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                   <p className="text-xs uppercase tracking-wide text-white/60">{stat.label}</p>
@@ -212,10 +234,27 @@ export default function Home() {
                   <p className="text-white/60">{stat.sub}</p>
                 </div>
               ))}
+            </div> */}
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={triggerLevitation}
+                className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200"
+              >
+                Launch milimo.ai
+              </button>
+              {/* <button className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/80 transition hover:border-white/60">
+              Watch demo
+              </button>
+              <p className="text-sm text-white/60">No credit card required.</p> */}
             </div>
           </div>
 
-          <div className="relative">
+          <div
+            className={`relative transform transition-all duration-500 ease-out ${
+              levitating ? "-translate-y-4 scale-[1.02] drop-shadow-[0_30px_80px_rgba(59,130,246,0.35)]" : ""
+            }`}
+          >
             <div className="absolute inset-4 rounded-4xl bg-linear-to-br from-cyan-400/40 to-fuchsia-500/40 blur-3xl" />
             <div className="relative rounded-4xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
               <div
@@ -334,7 +373,11 @@ export default function Home() {
                   </span>
                 )}
               </div>
-              {file && status !== "ready" && status !== "idle" ? (
+              {status === "idle" && !file ? (
+                <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-5 text-sm text-white/50">
+                  Upload a PDF to generate a personalized briefing here.
+                </div>
+              ) : file && status !== "ready" ? (
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
                   {status === "uploading"
                     ? "Uploading securely..."
@@ -369,7 +412,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="space-y-8">
+        {/* <section className="space-y-8">
           <div className="flex flex-col gap-4 text-center">
             <p className="text-xs uppercase tracking-[0.4em] text-white/50">Flow</p>
             <h2 className="text-3xl font-semibold text-white">Your AI co-pilot for every PDF maze.</h2>
@@ -388,9 +431,9 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
 
-        <section className="rounded-4xl border border-cyan-400/30 bg-linear-to-r from-cyan-500/20 via-transparent to-fuchsia-600/20 p-px">
+        {/* <section className="rounded-4xl border border-cyan-400/30 bg-linear-to-r from-cyan-500/20 via-transparent to-fuchsia-600/20 p-px">
           <div className="rounded-[30px] bg-black/70 px-6 py-10 text-center">
             <p className="text-sm uppercase tracking-[0.4em] text-white/60">Ready to skim smarter?</p>
             <h3 className="mt-4 text-3xl font-semibold text-white">Invite the AI summarizer built for modern teams.</h3>
@@ -406,7 +449,7 @@ export default function Home() {
               </button>
             </div>
           </div>
-        </section>
+        </section> */}
       </main>
     </div>
   );
