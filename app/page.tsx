@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import {
   Highlight,
@@ -36,7 +37,7 @@ const workflow = [
   },
 ];
 
-const loveNote = "Milimo.ai is just me shipping commits that say I adore you—let's keep building.";
+const loveNote = "Hi my name is Milimo.ai, I'm built for convenience and powered by true love.";
 
 const statusCopy: Record<Status, string> = {
   idle: "Awaiting upload",
@@ -100,6 +101,9 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [levitating, setLevitating] = useState(false);
   const levitateTimerRef = useRef<number | null>(null);
+  const [insightsOpen, setInsightsOpen] = useState(false);
+  const insightsRef = useRef<HTMLDivElement>(null);
+  const [insightsHeight, setInsightsHeight] = useState(0);
 
   const summarizeFile = useCallback(async (candidate: File) => {
     try {
@@ -192,6 +196,12 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (insightsRef.current) {
+      setInsightsHeight(insightsRef.current.scrollHeight);
+    }
+  }, [insightsOpen, status, file, dynamicSummary, dynamicHighlights]);
+
   const activeSummary = status === "ready" && file ? dynamicSummary : defaultSummary;
   const activeHighlights = status === "ready" && file ? dynamicHighlights : defaultHighlights;
   const statusLabel = statusCopy[status];
@@ -210,21 +220,31 @@ export default function Home() {
         <header className="grid gap-12 lg:grid-cols-[1.1fr,0.9fr]">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-sm text-white/70">
+              <Image
+                src="/milimo-logo.png"
+                alt="Milimo.ai logo"
+                width={28}
+                height={28}
+                className="rounded-full"
+                priority
+              />
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              Milimo.ai
+              <span className="font-semibold text-2xl font-milimo text-white">Milimo.ai</span>
             </div>
             <div className="space-y-6">
                 <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
-                Welcome to <span className="text-fuchsia-300">Milimo.ai</span>
+                  Welcome to{" "}
+                  <span className="font-milimo italic text-6xl text-fuchsia-300">Milimo.ai</span>
                 </h1>
-              <div className="max-w-2xl text-lg text-zinc-200">
-                <TextGenerateEffect
-                  words={loveNote}
-                  className="font-normal text-left text-zinc-100"
-                  filter={false}
-                  duration={0.4}
-                />
-              </div>
+                <div className="max-w-2xl text-lg text-zinc-200">
+                <div className="text-left text-sm text-zinc-100">
+                    <p className=" text-2xl font-light text-zinc-100">
+                    Hi my name is{" "}
+                    <span className="font-milimo italic text-fuchsia-300">Milimo.ai</span>, I&apos;m
+                    built for convenience and powered by true love.
+                    </p>
+                </div>
+                </div>
             </div>
             {/* <div className="flex flex-wrap gap-4 text-sm text-zinc-300">
               {featureStats.map((stat) => (
@@ -235,7 +255,7 @@ export default function Home() {
                 </div>
               ))}
             </div> */}
-            <div className="flex flex-wrap items-center gap-3">
+            {/* <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={triggerLevitation}
@@ -243,11 +263,11 @@ export default function Home() {
               >
                 Launch milimo.ai
               </button>
-              {/* <button className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/80 transition hover:border-white/60">
+              <button className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/80 transition hover:border-white/60">
               Watch demo
               </button>
-              <p className="text-sm text-white/60">No credit card required.</p> */}
-            </div>
+              <p className="text-sm text-white/60">No credit card required.</p>
+            </div> */}
           </div>
 
           <div
@@ -299,7 +319,7 @@ export default function Home() {
                   {isSubmitting ? "Working..." : "Upload manuscript"}
                 </button>
                 <p className="mt-3 text-xs text-white/50">or paste a public link</p>
-                <p className="mt-4 text-xs uppercase tracking-[0.3em] text-white/50">{statusLabel}</p>
+                {/* <p className="mt-4 text-xs uppercase tracking-[0.3em] text-white/50">{statusLabel}</p> */}
                 {file && (
                   <div className="mt-4 text-left text-sm text-white/80">
                     <div className="flex items-center justify-between gap-4">
@@ -329,7 +349,7 @@ export default function Home() {
                 )}
                 {error && <p className="mt-4 text-xs text-rose-300">{error}</p>}
               </div>
-              <div className="mt-6 space-y-4 text-sm">
+              {/* <div className="mt-6 space-y-4 text-sm">
                 {workflow.map((step) => (
                   <div
                     key={step.label}
@@ -346,68 +366,87 @@ export default function Home() {
                     </div>
                   </div>
                 ))}
-              </div>
+              </div> */}
             </div>
           </div>
         </header>
 
-        <section className="grid gap-8 rounded-[40px] border border-white/5 bg-white/5 p-8 backdrop-blur-xl lg:grid-cols-[1.1fr,0.9fr]">
-          <div className="space-y-6">
-            <p className="text-sm uppercase tracking-[0.2em] text-white/60">Live summary preview</p>
-            <div className="space-y-6 rounded-3xl bg-black/40 p-6">
-              <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-white/70">
-                <p>
-                  {status === "ready" && file
-                    ? `Summary for ${activeSummary.title}`
-                    : "Sample summary preview"}
-                </p>
-                {file && (
-                  <span
-                    className={`rounded-full border px-3 py-1 text-xs ${
-                      status === "ready"
-                        ? "border-emerald-400/40 text-emerald-200"
-                        : "border-white/20 text-white/70"
-                    }`}
-                  >
-                    {statusLabel}
-                  </span>
+        <section className="rounded-[40px] border border-white/5 bg-white/5 p-4 backdrop-blur-xl">
+          <button
+            type="button"
+            onClick={() => setInsightsOpen((prev) => !prev)}
+            className="flex w-full items-center justify-between rounded-3xl border border-white/10 bg-black/20 px-6 py-4 text-left text-sm font-semibold text-white/80 transition hover:bg-black/30"
+          >
+            <span className="text-xs uppercase tracking-[0.3em] text-white/70">
+              Insights & highlights
+            </span>
+            <span
+              className={`text-lg transition-transform duration-300 ${insightsOpen ? "rotate-180" : ""}`}
+              aria-hidden="true"
+            >
+              ❯
+            </span>
+          </button>
+          <div
+            className="transition-[max-height] duration-600 ease-in-out"
+            style={{ maxHeight: insightsOpen ? `${insightsHeight}px` : "0px", overflow: "hidden" }}
+          >
+            <div ref={insightsRef} className="grid gap-8 px-4 pb-6 pt-8 lg:grid-cols-[1.1fr,0.9fr]">
+              <div className="space-y-6 rounded-3xl bg-black/40 p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-white/70">
+                  <p>
+                    {status === "ready" && file
+                      ? `Summary for ${activeSummary.title}`
+                      : "Summary preview will appear here"}
+                  </p>
+                  {file && (
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        status === "ready"
+                          ? "border-emerald-400/40 text-emerald-200"
+                          : "border-white/20 text-white/70"
+                      }`}
+                    >
+                      {statusLabel}
+                    </span>
+                  )}
+                </div>
+                {status === "idle" && !file ? (
+                  <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-5 text-sm text-white/50">
+                    Upload a PDF to generate a personalized briefing here.
+                  </div>
+                ) : file && status !== "ready" ? (
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+                    {status === "uploading"
+                      ? "Uploading securely..."
+                      : "Reasoning over sections, ranking insights..."}
+                  </div>
+                ) : (
+                  <article className="space-y-4 text-base text-zinc-200">
+                    {activeSummary.paragraphs.map((paragraph, index) => (
+                      <p key={`${activeSummary.title}-${index}`}>{paragraph}</p>
+                    ))}
+                  </article>
                 )}
-              </div>
-              {status === "idle" && !file ? (
-                <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-5 text-sm text-white/50">
-                  Upload a PDF to generate a personalized briefing here.
+                <div className="grid gap-4 rounded-2xl border border-emerald-400/30 bg-emerald-400/5 p-4">
+                  <p className="text-sm font-semibold text-emerald-200">Signal Boost</p>
+                  <p className="text-sm text-emerald-50">
+                    {`${activeSummary.quote} — ${activeSummary.quoteAttribution}`}
+                  </p>
                 </div>
-              ) : file && status !== "ready" ? (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
-                  {status === "uploading"
-                    ? "Uploading securely..."
-                    : "Reasoning over sections, ranking insights..."}
-                </div>
-              ) : (
-                <article className="space-y-4 text-base text-zinc-200">
-                  {activeSummary.paragraphs.map((paragraph, index) => (
-                    <p key={`${activeSummary.title}-${index}`}>{paragraph}</p>
-                  ))}
-                </article>
-              )}
-              <div className="grid gap-4 rounded-2xl border border-emerald-400/30 bg-emerald-400/5 p-4">
-                <p className="text-sm font-semibold text-emerald-200">Signal Boost</p>
-                <p className="text-sm text-emerald-50">
-                  {`${activeSummary.quote} — ${activeSummary.quoteAttribution}`}
-                </p>
               </div>
-            </div>
-          </div>
 
-          <div className="space-y-5">
-            <p className="text-sm uppercase tracking-[0.2em] text-white/60">Highlights generated</p>
-            <div className="space-y-4">
-              {activeHighlights.map((item) => (
-                <div key={item.title} className="rounded-3xl border border-white/10 bg-black/30 p-5">
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/40">{item.title}</p>
-                  <p className="mt-3 text-base text-zinc-100">{item.detail}</p>
+              <div className="space-y-5 rounded-3xl bg-black/30 p-6">
+                <p className="text-sm uppercase tracking-[0.2em] text-white/60">Highlights generated</p>
+                <div className="space-y-4">
+                  {activeHighlights.map((item) => (
+                    <div key={item.title} className="rounded-3xl border border-white/10 bg-black/40 p-5">
+                      <p className="text-xs uppercase tracking-[0.3em] text-white/40">{item.title}</p>
+                      <p className="mt-3 text-base text-zinc-100">{item.detail}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </section>

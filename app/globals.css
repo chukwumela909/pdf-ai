@@ -32,3 +32,7 @@ h3,
 .font-display {
   font-family: var(--font-stack-sans), "Stack Sans Notch", "Inter", sans-serif;
 }
+
+.font-milimo {
+  font-family: var(--font-milimo), "ITC Garamond", "Times New Roman", serif;
+}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { Inter, Stack_Sans_Notch } from "next/font/google";
 import "./globals.css";
 
@@ -10,6 +11,12 @@ const stackSans = Stack_Sans_Notch({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const garamond = localFont({
+  src: "../public/itc-garamond-std.otf",
+  variable: "--font-milimo",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${stackSans.variable} ${inter.variable} antialiased`}>
+      <body className={`${stackSans.variable} ${inter.variable} ${garamond.variable} antialiased`}>
         {children}
       </body>
     </html>
