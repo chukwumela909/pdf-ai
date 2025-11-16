@@ -238,7 +238,7 @@ export default function Home() {
                 </h1>
                 <div className="max-w-2xl text-lg text-zinc-200">
                 <div className="text-left text-sm text-zinc-100">
-                    <p className=" text-2xl font-light text-zinc-100">
+                    <p className=" text-md font-light text-zinc-100">
                     Hi my name is{" "}
                     <span className="font-milimo italic text-fuchsia-300">Milimo.ai</span>, I&apos;m
                     built for convenience and powered by true love.
